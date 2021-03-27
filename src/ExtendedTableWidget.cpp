@@ -289,6 +289,13 @@ ExtendedTableWidget::ExtendedTableWidget(QWidget* parent) :
     QAction* pasteAction = new QAction(QIcon(":/icons/paste"), tr("Paste"), m_contextMenu);
     QAction* printAction = new QAction(QIcon(":/icons/print"), tr("Print..."), m_contextMenu);
 
+    /* TODO: add my actions  <13-03-21, sinhnn> */
+    QAction* openAction = new QAction(tr("Open..."), m_contextMenu);
+    /* TODO: end my actions <13-03-21, sinhnn> */
+
+    /* TODO: add my actions  <13-03-21, sinhnn> */
+    m_contextMenu->addAction(openAction);
+    /* TODO: end my actions <13-03-21, sinhnn> */
     m_contextMenu->addAction(filterAction);
     QMenu* filterMenu = m_contextMenu->addMenu(tr("Use in Filter Expression"));
     filterMenu->addAction(containingAction);
@@ -412,6 +419,13 @@ ExtendedTableWidget::ExtendedTableWidget(QWidget* parent) :
     connect(printAction, &QAction::triggered, this, [&]() {
        openPrintDialog();
     });
+
+    /* TODO: add my action  <13-03-21, sinhnn> */
+    connect(openAction, &QAction::triggered, this, [&]() {
+       openItem(selectedIndexes());
+    });
+    /* TODO: end my action <13-03-21, sinhnn> */
+
 
     // Add spreadsheet shortcuts for selecting entire columns or entire rows.
     QShortcut* selectColumnShortcut = new QShortcut(QKeySequence("Ctrl+Space"), this);
@@ -711,6 +725,58 @@ void ExtendedTableWidget::copy(const bool withHeaders, const bool inSQL )
     QMimeData *mimeData = new QMimeData;
     copyMimeData(selectionModel()->selectedIndexes(), mimeData, withHeaders, inSQL);
     qApp->clipboard()->setMimeData(mimeData);
+}
+
+
+// #include <glog/logging.h>
+#include "spawner/spawner.hpp"
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QMessageLogger>
+#include <QtDebug>
+
+
+void ExtendedTableWidget::openItem(const QModelIndexList& indices) {
+    SqliteTableModel* m = qobject_cast<SqliteTableModel*>(model());
+    std::string tableName = m->currentTableName().name();
+    // QMessageLogger(__FILE__, __LINE__, 0).debug() << "execContext: " << m->db().execContext;
+
+    json tableContextTemplates = m->db().execContext[tableName];
+    if (tableContextTemplates.empty()) {
+        QMessageBox msgBox;
+        msgBox.setText(("No execution context for table " +tableName).c_str());
+        msgBox.exec();
+        return;
+    }
+
+    std::vector <int> ignoreColumns;
+    for (const QModelIndex& index : indices) {
+        int col = index.column();
+        bool isInIgnore = std::find(ignoreColumns.begin(), ignoreColumns.end(), col) != ignoreColumns.end();
+        if(isInIgnore) continue;
+
+        std::string columnName = m->headerData(col, Qt::Horizontal, Qt::DisplayRole).toByteArray().toStdString();
+
+        json contextTemplate = tableContextTemplates[columnName];
+        if(contextTemplate.empty()) {
+            ignoreColumns.push_back(col);
+            QMessageBox msgBox;
+            msgBox.setText(("No execution context for column " + columnName).c_str());
+            msgBox.exec();
+            continue;
+        }
+        // std::vector<std::string> contextTemplate;
+        // for (int i = 0; i < _contextTemplate.size(); i++){
+        //     contextTemplate.push_back(_contextTemplate.at(i).toString().toStdString());
+        // }
+
+        // if (contextTemplate.size() <= 0) {
+        //     QMessageLogger(__FILE__, __LINE__, 0).debug() << "no execution context for column " << columnName.toStdString();
+        //     continue;
+        // }
+
+        exec_execContextTemplate(contextTemplate, m->itemAtRow(index.row()));
+    }
 }
 
 void ExtendedTableWidget::paste()

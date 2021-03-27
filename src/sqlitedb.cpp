@@ -26,6 +26,14 @@
 #include <chrono>
 #include <functional>
 
+// #include <glog/logging.h>
+#include <iostream>
+#include <QJsonObject>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QDebug>
+const std::string c_execContext_tableName = "execContext";
+
 using json = nlohmann::json;
 
 QStringList DBBrowserDB::Datatypes = {"INTEGER", "TEXT", "BLOB", "REAL", "NUMERIC"};
@@ -269,6 +277,7 @@ bool DBBrowserDB::open(const QString& db, bool readOnly)
 
         updateSchema();
 
+        loadExecContext();
         return true;
     } else {
         return false;
@@ -1333,6 +1342,37 @@ bool DBBrowserDB::getRow(const sqlb::ObjectIdentifier& table, const QString& row
 
     return ret;
 }
+
+bool DBBrowserDB::loadExecContext() {
+    std::string query = "SELECT * FROM " + c_execContext_tableName;
+    // QJsonObject obj;
+    int customNumberColumns = 0;
+    std::vector<QByteArray> customOut;
+    // std::vector<QByteArray> customColumnNames;
+    DBBrowserDB::execCallback callback = [this](int numberColumns, std::vector<QByteArray> out, std::vector<QByteArray> columnNames) -> bool {
+        // if (!execContext.empty()) {
+        //     execContext.erase();
+        // }
+        std::string tableName = out.at(0).toStdString();
+        qDebug() << ("Loading execContext for table " + tableName).c_str();
+        json tableExecTemplate;
+        // QJsonObject itemContextTemplates = execContext[tableName].toObject();
+        for (int i = 1; i < out.size(); i++) {
+            qDebug() << "\t" << (columnNames.at(i).toStdString() +  ":" + out.at(i).toStdString()).c_str();
+            try {
+                tableExecTemplate[columnNames.at(i).toStdString()] = json::parse(out.at(i).toStdString());
+            } catch ( ... ) {
+                qDebug() << "unable to load execContext for column" << columnNames.at(i);
+            }
+        }
+        execContext[tableName] = tableExecTemplate;
+        return false;
+    };
+
+    bool ret = executeSQL(query, false, true, callback);
+    return true;
+}
+
 
 unsigned long DBBrowserDB::max(const sqlb::ObjectIdentifier& tableName, const std::string& field) const
 {

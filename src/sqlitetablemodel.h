@@ -13,6 +13,8 @@
 #include "RowCache.h"
 #include "sql/Query.h"
 #include "sql/sqlitetypes.h"
+#include <json.hpp>
+using json = nlohmann::json;
 
 struct sqlite3;
 class DBBrowserDB;
@@ -40,6 +42,7 @@ public:
     size_t filterCount() const;
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
+    json itemAtRow(int row);
     bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole) override;
     bool setTypedData(const QModelIndex& index, bool isBlob, const QVariant& value, int role = Qt::EditRole);
 

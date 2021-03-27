@@ -14,6 +14,11 @@
 #include <QObject>
 #include <QByteArray>
 #include <QStringList>
+#include <QJsonObject>
+
+#include <json.hpp>
+using json = nlohmann::json;
+
 
 struct sqlite3;
 class CipherSettings;
@@ -274,6 +279,10 @@ public:
     std::string generateTemporaryTableName(const std::string& schema) const;
 
     schemaMap schemata;
+
+    json execContext;
+    bool loadExecContext();
+    // bool loadExecContext(const std::string &tableName);
 
 signals:
     void sqlExecuted(QString sql, int msgtype) const;

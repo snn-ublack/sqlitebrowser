@@ -85,6 +85,7 @@ else()
     find_package(QHexEdit)
 endif()
 set(JSON_DIR libs/json)
+include_directories(libs)
 
 if(NOT QSCINTILLA_FOUND)
     set(QSCINTILLA_DIR libs/qscintilla/Qt4Qt5)

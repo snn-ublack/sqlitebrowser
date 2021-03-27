@@ -100,6 +100,8 @@ private:
     void paste();
     void cut();
 
+    void openItem(const QModelIndexList& index);
+
     void useAsFilter(const QString& filterOperator, bool binary = false, const QString& operatorSuffix = QString());
     void duplicateUpperCell();
 

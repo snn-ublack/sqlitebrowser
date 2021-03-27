@@ -295,6 +295,18 @@ QVariant SqliteTableModel::getMatchingCondFormat(size_t row, size_t column, cons
         return QVariant();
 }
 
+json SqliteTableModel::itemAtRow(const int row) {
+    const bool row_available = m_cache.count(row);
+    json item;
+    if (row >= rowCount()) return item;
+    const QByteArray blank_data("");
+    for (int i = 0; i < columnCount(); i ++) {
+        const QByteArray& data = m_cache.at(row).at(i);
+        item[m_headers[i]] = isBinary(data) ? "binary" : data;
+    }
+    return item;
+}
+
 QVariant SqliteTableModel::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid())
