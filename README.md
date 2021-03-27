@@ -1,3 +1,16 @@
+## This repos is forked from sqlitebrowser with new feature `Execution Context`.
+`Execution Context` means that you can declare execution context on each cell in each table.
+Setting up `Execution Context` requires `execContext` table, after that you just `right-click` on cell then choose `Open` 
+
+An example locates in "examples/execution-context/"
+
+**I am free and interesting on doing automation task. If anyone have any job please contact me via email `snn.ublack@gmail.com`:**
+
+	 - C/C++, Python, Javascript, Nodejs, Bash Shell, Chrome Extension ...
+	 - Image Processing
+	 - Linux Service
+	 - Linux Embedded Board
+
 # DB Browser for SQLite
 
 [![Wiki][wiki-img]][wiki]
@@ -107,7 +120,7 @@ Install with the following command:
 Install for Fedora (i386 and x86_64) by issuing the following command:
 
     $ sudo dnf install sqlitebrowser
-    
+
 ### openSUSE
 
     $ sudo zypper install sqlitebrowser
@@ -297,26 +310,26 @@ Version 2, as well as the GNU General Public License Version 3 or later.
 
 Modification or redistribution is permitted under the conditions of these licenses.
 
-  [travis-img]: https://travis-ci.org/sqlitebrowser/sqlitebrowser.svg?branch=master
-  [travis]: https://travis-ci.org/sqlitebrowser/sqlitebrowser
+[travis-img]: https://travis-ci.org/sqlitebrowser/sqlitebrowser.svg?branch=master
+[travis]: https://travis-ci.org/sqlitebrowser/sqlitebrowser
 
-  [gitter-img]: https://badges.gitter.im/sqlitebrowser/sqlitebrowser.svg
-  [gitter]: https://gitter.im/sqlitebrowser/sqlitebrowser
+[gitter-img]: https://badges.gitter.im/sqlitebrowser/sqlitebrowser.svg
+[gitter]: https://gitter.im/sqlitebrowser/sqlitebrowser
 
-  [slack-img]: https://img.shields.io/badge/chat-on%20slack-orange.svg
-  [slack]: https://join.slack.com/t/db4s/shared_invite/enQtMzc3MzY5OTU4NDgzLWRlYjk0ZmE5ZDEzYWVmNDQxYTYxNmJjNWVkMjI3ZmVjZTY2NDBjODY3YzNhNTNmZDVlNWI2ZGFjNTk5MjJkYmU
+[slack-img]: https://img.shields.io/badge/chat-on%20slack-orange.svg
+[slack]: https://join.slack.com/t/db4s/shared_invite/enQtMzc3MzY5OTU4NDgzLWRlYjk0ZmE5ZDEzYWVmNDQxYTYxNmJjNWVkMjI3ZmVjZTY2NDBjODY3YzNhNTNmZDVlNWI2ZGFjNTk5MjJkYmU
 
-  [download-img]: https://img.shields.io/github/downloads/sqlitebrowser/sqlitebrowser/total.svg
-  [download]: https://github.com/sqlitebrowser/sqlitebrowser/releases
+[download-img]: https://img.shields.io/github/downloads/sqlitebrowser/sqlitebrowser/total.svg
+[download]: https://github.com/sqlitebrowser/sqlitebrowser/releases
 
-  [qt-img]: https://img.shields.io/badge/Qt-qmake-green.svg
-  [qt]: https://www.qt.io
+[qt-img]: https://img.shields.io/badge/Qt-qmake-green.svg
+[qt]: https://www.qt.io
 
-  [coverity-img]: https://img.shields.io/coverity/scan/11712.svg
-  [coverity]: https://scan.coverity.com/projects/sqlitebrowser-sqlitebrowser
+[coverity-img]: https://img.shields.io/coverity/scan/11712.svg
+[coverity]: https://scan.coverity.com/projects/sqlitebrowser-sqlitebrowser
 
-  [patreon-img]: https://img.shields.io/badge/donate-Patreon-coral.svg
-  [patreon]: https://www.patreon.com/bePatron?u=11578749
+[patreon-img]: https://img.shields.io/badge/donate-Patreon-coral.svg
+[patreon]: https://www.patreon.com/bePatron?u=11578749
 
-  [wiki-img]: https://img.shields.io/badge/docs-Wiki-blue.svg
-  [wiki]: https://github.com/sqlitebrowser/sqlitebrowser/wiki
+[wiki-img]: https://img.shields.io/badge/docs-Wiki-blue.svg
+[wiki]: https://github.com/sqlitebrowser/sqlitebrowser/wiki
