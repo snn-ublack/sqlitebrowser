@@ -45,6 +45,7 @@ int exec_execContextTemplate(vector<string> contextTemplate, const json& data)
     if (contextTemplate.size() <= 0) return ERROR_CODE_NO_EXECCONTEXT;
     qint64 pid = -1;
     QProcess proc;
+    /* execContext and its feedback to sqlite db */
     vector <string> realArgs = parse_execContextTemplate(contextTemplate, data);
     // for (int i = 0; i < realArgs.size(); ++i) {
     //     LOG(INFO) << "realArgs.at(" << i << ") = " << realArgs.at(i);

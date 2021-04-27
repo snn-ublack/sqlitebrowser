@@ -739,6 +739,7 @@ void ExtendedTableWidget::copy(const bool withHeaders, const bool inSQL )
 void ExtendedTableWidget::openItem(const QModelIndexList& indices) {
     SqliteTableModel* m = qobject_cast<SqliteTableModel*>(model());
     std::string tableName = m->currentTableName().name();
+    std::string currentFile =  m->db().currentFile().toStdString();
     // QMessageLogger(__FILE__, __LINE__, 0).debug() << "execContext: " << m->db().execContext;
 
     json tableContextTemplates = m->db().execContext[tableName];
@@ -775,7 +776,14 @@ void ExtendedTableWidget::openItem(const QModelIndexList& indices) {
         //     continue;
         // }
 
-        exec_execContextTemplate(contextTemplate, m->itemAtRow(index.row()));
+        /* Load global variable to execution context */
+        json item = m->itemAtRow(index.row());
+        item["__path__"] = currentFile; // sqlite path
+        item["__name__"] = tableName; // table name
+#ifdef DEBUG
+        std::cout << item.dump(2) << std::endl;
+#endif
+        exec_execContextTemplate(contextTemplate, item);
     }
 }
 
