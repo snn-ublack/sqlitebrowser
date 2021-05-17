@@ -282,6 +282,9 @@ public:
 
     json execContext;
     bool loadExecContext();
+    bool loadExecContextFromJsonFile(std::string jsonFile);
+    bool loadExecContextFromJsonFile();
+
     // bool loadExecContext(const std::string &tableName);
 
 signals:

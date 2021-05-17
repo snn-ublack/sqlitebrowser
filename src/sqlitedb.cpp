@@ -33,7 +33,7 @@
 #include <QJsonDocument>
 #include <QDebug>
 const std::string c_execContext_tableName = "execContext";
-
+#include <fstream>
 using json = nlohmann::json;
 
 QStringList DBBrowserDB::Datatypes = {"INTEGER", "TEXT", "BLOB", "REAL", "NUMERIC"};
@@ -277,7 +277,8 @@ bool DBBrowserDB::open(const QString& db, bool readOnly)
 
         updateSchema();
 
-        loadExecContext();
+        // loadExecContext(); // cause of busy status
+        loadExecContextFromJsonFile();
         return true;
     } else {
         return false;
@@ -1354,15 +1355,15 @@ bool DBBrowserDB::loadExecContext() {
         //     execContext.erase();
         // }
         std::string tableName = out.at(0).toStdString();
-        qDebug() << ("Loading execContext for table " + tableName).c_str();
+        // qDebug() << ("Loading execContext for table " + tableName).c_str();
         json tableExecTemplate;
         // QJsonObject itemContextTemplates = execContext[tableName].toObject();
         for (int i = 1; i < out.size(); i++) {
-            qDebug() << "\t" << (columnNames.at(i).toStdString() +  ":" + out.at(i).toStdString()).c_str();
+            // qDebug() << "\t" << (columnNames.at(i).toStdString() +  ":" + out.at(i).toStdString()).c_str();
             try {
                 tableExecTemplate[columnNames.at(i).toStdString()] = json::parse(out.at(i).toStdString());
             } catch ( ... ) {
-                qDebug() << "unable to load execContext for column" << columnNames.at(i);
+                // qDebug() << "unable to load execContext for column" << columnNames.at(i);
             }
         }
         execContext[tableName] = tableExecTemplate;
@@ -1371,6 +1372,21 @@ bool DBBrowserDB::loadExecContext() {
 
     bool ret = executeSQL(query, false, true, callback);
     return true;
+}
+
+
+bool DBBrowserDB::loadExecContextFromJsonFile(std::string jsonFile) {
+    std::ifstream ifs(jsonFile);
+    // std::cout << "loadExecContextFromJsonFile: " <<  jsonFile << std::endl;
+    if (ifs){
+        execContext = json::parse(ifs);
+        return true;
+    }
+    return false;
+}
+
+bool DBBrowserDB::loadExecContextFromJsonFile() {
+    return loadExecContextFromJsonFile(curDBFilename.toStdString() + ".execContext.json");
 }
 
 

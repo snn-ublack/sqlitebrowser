@@ -496,6 +496,7 @@ void TableBrowser::refresh()
             emit statusMessageRequested(statusMessage);
         });
     }
+    qobject_cast<SqliteTableModel*>(ui->dataTable->model())->db().loadExecContextFromJsonFile();
 
     // Retrieve the stored data for this table if there is any. If there are no settings for this table,
     // this will insert and return a settings object with default values.
