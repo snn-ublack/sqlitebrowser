@@ -728,13 +728,13 @@ void ExtendedTableWidget::copy(const bool withHeaders, const bool inSQL )
 }
 
 
-// #include <glog/logging.h>
 #include "spawner/spawner.hpp"
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QMessageLogger>
-#include <QtDebug>
-
+#include <QDebug>
+#include <json.hpp>
+using json = nlohmann::json;
 
 void ExtendedTableWidget::openItem(const QModelIndexList& indices) {
     SqliteTableModel* m = qobject_cast<SqliteTableModel*>(model());
@@ -757,31 +757,39 @@ void ExtendedTableWidget::openItem(const QModelIndexList& indices) {
         if(isInIgnore) continue;
 
         std::string columnName = m->headerData(col, Qt::Horizontal, Qt::DisplayRole).toByteArray().toStdString();
-
-        json contextTemplate = tableContextTemplates[columnName];
-        if(contextTemplate.empty()) {
+        json contextTemplate;
+        try {
+            contextTemplate = tableContextTemplates[columnName];
+        } catch (...) {
+            ignoreColumns.push_back(col);
+            QMessageBox msgBox;
+            msgBox.setText(("Invalid contextTemplate of " + columnName + ". It must be an array!").c_str());
+            msgBox.exec();
+            continue;
+        }
+        if (!contextTemplate.is_array()) {
+            ignoreColumns.push_back(col);
+            QMessageBox msgBox;
+            msgBox.setText(("Invalid contextTemplate of " + columnName + ". It must be an array!").c_str());
+            msgBox.exec();
+            continue;
+        }
+#ifdef DEBUG
+        qDebug() << "contextTemplate: " << contextTemplate.dump() << std::endl;
+ #endif         
+        if (contextTemplate.empty()) {
             ignoreColumns.push_back(col);
             QMessageBox msgBox;
             msgBox.setText(("No execution context for column " + columnName).c_str());
             msgBox.exec();
             continue;
         }
-        // std::vector<std::string> contextTemplate;
-        // for (int i = 0; i < _contextTemplate.size(); i++){
-        //     contextTemplate.push_back(_contextTemplate.at(i).toString().toStdString());
-        // }
-
-        // if (contextTemplate.size() <= 0) {
-        //     QMessageLogger(__FILE__, __LINE__, 0).debug() << "no execution context for column " << columnName.toStdString();
-        //     continue;
-        // }
-
         /* Load global variable to execution context */
         json item = m->itemAtRow(index.row());
         item["__path__"] = currentFile; // sqlite path
         item["__name__"] = tableName; // table name
 #ifdef DEBUG
-        std::cout << item.dump(2) << std::endl;
+        qDebug() << "item: " << item.dump() << std::endl;
 #endif
         exec_execContextTemplate(contextTemplate, item);
     }

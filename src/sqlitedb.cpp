@@ -1379,7 +1379,13 @@ bool DBBrowserDB::loadExecContextFromJsonFile(std::string jsonFile) {
     std::ifstream ifs(jsonFile);
     // std::cout << "loadExecContextFromJsonFile: " <<  jsonFile << std::endl;
     if (ifs){
-        execContext = json::parse(ifs);
+        try {
+            execContext = json::parse(ifs);
+        } catch (...) {
+            QMessageBox msgBox;
+            msgBox.setText(("Unable to parse JSON file " + jsonFile).c_str());
+            msgBox.exec();
+        }
         return true;
     }
     return false;
