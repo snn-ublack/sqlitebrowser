@@ -6,6 +6,8 @@
 #include "json/json.hpp"
 #include "inja/inja.hpp"
 
+#include <string>
+#include <vector>
 #include <QtGlobal>
 #include <QString>
 #include <QProcess>
@@ -24,13 +26,12 @@ using namespace std;
 *
 * @return: std::vector<std::string>
 */
-vector<string> parse_execContextTemplate(vector<string> contextTemplate, const json& data)
-{
+vector<string> parse_execContextTemplate(vector<string> contextTemplate, const json& data) {
     vector<string> exectionArgs;
     for (vector<string>::const_iterator i = contextTemplate.begin(); i != contextTemplate.end(); ++i) {
         try {
-            exectionArgs.push_back(inja::render(*i, data)); 
-        } catch(const std::exception& e) {    
+            exectionArgs.push_back(inja::render(*i, data));
+        } catch(const std::exception& e) {
             QMessageBox msgBox;
             msgBox.setText("Unable to parse_execContextTemplate!");
             msgBox.setInformativeText(e.what());
@@ -48,7 +49,7 @@ vector<string> parse_execContextTemplate(vector<string> contextTemplate, const j
             msgBox.setText("Unable to parse_execContextTemplate!");
             msgBox.exec();
             return vector<string>();
-        } 
+        }
     }
     return exectionArgs;
 }
@@ -62,8 +63,7 @@ vector<string> parse_execContextTemplate(vector<string> contextTemplate, const j
 *
 * @return: int pid of process
 */
-int exec_execContextTemplate(vector<string> contextTemplate, const json& data)
-{
+int exec_execContextTemplate(vector<string> contextTemplate, const json& data) {
     if (contextTemplate.empty()) return ERROR_CODE_NO_EXECCONTEXT;
     qint64 pid = -1;
     QProcess proc;
@@ -81,7 +81,7 @@ int exec_execContextTemplate(vector<string> contextTemplate, const json& data)
     for (int i = 1; i < realArgs.size(); i++) {
       if (realArgs.at(i).empty()) continue;
       arguments << QString::fromStdString(realArgs.at(i));
-#ifdef DEBUG      
+#ifdef DEBUG
       qDebug() << arguments.at(i).toStdString() << std::endl;
 #endif
     }
@@ -89,7 +89,7 @@ int exec_execContextTemplate(vector<string> contextTemplate, const json& data)
 
     try {
         proc.startDetached(program, arguments, "", &pid);
-    } catch(...) {      
+    } catch(...) {
         QMessageBox msgBox;
         msgBox.setText("Unable to start your executation context!");
         msgBox.setInformativeText(program + QString(" ") + arguments.join(" "));
